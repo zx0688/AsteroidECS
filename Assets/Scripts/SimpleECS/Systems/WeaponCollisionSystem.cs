@@ -11,6 +11,10 @@ namespace ECS
         private List<GameObject> weapons;
         private List<GameObject> targets;
 
+        public WeaponCollisionSystem(GameData gameData) : base(gameData)
+        {
+        }
+
         override protected void OnEntitiesChanged()
         {
             targets = GetEntities(typeof(Target));
@@ -32,6 +36,10 @@ namespace ECS
 
                         if (weapon.TryGetComponent(out HP hp))
                             hp.Value = 0;
+
+                        gameData.Score += target.GetComponent<Target>().Score;
+
+
                     }
                 }
             }

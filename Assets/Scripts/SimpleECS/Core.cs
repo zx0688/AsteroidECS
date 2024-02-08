@@ -9,7 +9,7 @@ namespace ECS
     {
         [SerializeField] private UI ui;
 
-        private static Dictionary<Cycle, List<System>> systems = new Dictionary<Cycle, List<System>>();
+        private Dictionary<Cycle, List<System>> systems = new Dictionary<Cycle, List<System>>();
 
         private enum Cycle
         {
@@ -22,24 +22,22 @@ namespace ECS
             systems.Add(Cycle.Update, new List<System>());
             systems.Add(Cycle.FixedUpdate, new List<System>());
 
+            GameData gameData = new GameData();
 
-            Add(new CreateSystem(), Cycle.Update);
-            Add(new InputSystem(), Cycle.Update);
-            Add(new PortalSystem(), Cycle.Update);
-            Add(new HPSystem(), Cycle.Update);
-            Add(new FollowSystem(), Cycle.Update);
-            Add(new DurationSystem(), Cycle.Update);
-            Add(new AmmoSystem(), Cycle.Update);
-            Add(new UISystem(ui), Cycle.Update);
+            Add(new CreateSystem(gameData), Cycle.Update);
+            Add(new InputSystem(gameData), Cycle.Update);
+            Add(new PortalSystem(gameData), Cycle.Update);
+            Add(new HPSystem(gameData), Cycle.Update);
+            Add(new FollowSystem(gameData), Cycle.Update);
+            Add(new DurationSystem(gameData), Cycle.Update);
+            Add(new AmmoSystem(gameData), Cycle.Update);
+            Add(new UISystem(ui, gameData), Cycle.Update);
 
-            Add(new PlayerCollisionSystem(), Cycle.FixedUpdate);
-            Add(new WeaponCollisionSystem(), Cycle.FixedUpdate);
-            Add(new ForceSystem(), Cycle.FixedUpdate);
-            Add(new RotationSystem(), Cycle.FixedUpdate);
-            Add(new MovementSystem(), Cycle.FixedUpdate);
-            Add(new PositionSystem(), Cycle.FixedUpdate);
-
-
+            Add(new PlayerCollisionSystem(gameData), Cycle.FixedUpdate);
+            Add(new WeaponCollisionSystem(gameData), Cycle.FixedUpdate);
+            Add(new ForceSystem(gameData), Cycle.FixedUpdate);
+            Add(new RotationSystem(gameData), Cycle.FixedUpdate);
+            Add(new MovementSystem(gameData), Cycle.FixedUpdate);
         }
 
         private void Add(System s, Cycle key) => systems[key].Add(s);

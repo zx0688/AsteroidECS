@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Value: 1
+  Destroyble: 0
 --- !u!114 &5269341538257985676
 MonoBehaviour:
   m_ObjectHideFlags: 0

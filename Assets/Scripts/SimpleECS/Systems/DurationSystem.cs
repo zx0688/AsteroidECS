@@ -7,6 +7,10 @@ namespace ECS
 {
     public class DurationSystem : System
     {
+        public DurationSystem(GameData gameData) : base(gameData)
+        {
+        }
+
         protected override bool Filter(GameObject entity) => HasComponents(entity, typeof(Duration));
 
         override public void Update()

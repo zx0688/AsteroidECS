@@ -8,6 +8,9 @@ namespace ECS
 {
     public class CollisionSystem : System
     {
+        public CollisionSystem(GameData gameData) : base(gameData)
+        {
+        }
 
         protected bool Hit(LineRenderer lineRenderer1, LineRenderer lineRenderer2)
         {

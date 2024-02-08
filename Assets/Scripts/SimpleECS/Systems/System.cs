@@ -9,11 +9,15 @@ namespace ECS
     public abstract class System
     {
         private static List<GameObject> _entities = new List<GameObject>();
+
+        protected GameData gameData;
         protected List<GameObject> entities = null;
         protected static Action OnChange;
 
-        public System()
+        public System(GameData gameData)
         {
+            this.gameData = gameData;
+
             Init();
             OnChange += OnEntitiesChanged;
         }
@@ -36,20 +40,25 @@ namespace ECS
 
         protected virtual void RemoveEntity(GameObject entity)
         {
+            DestroyEntity(entity);
+            _entities.Remove(entity);
+            OnChange?.Invoke();
+        }
+
+        private void DestroyEntity(GameObject entity)
+        {
             entity.SetActive(false);
 
             if (entity.TryGetComponent(out Asteroid a))
                 ObjectPool.Release("Asteroid", entity);
+            else if (entity.TryGetComponent(out Player s))
+                ObjectPool.Release("Ship", entity);
             else if (entity.TryGetComponent(out Bullet b))
                 ObjectPool.Release("Bullet", entity);
             else if (entity.TryGetComponent(out Duration d))
                 ObjectPool.Release("Laser", entity);
             else
                 UnityEngine.Object.Destroy(entity);
-
-
-            _entities.Remove(entity);
-            OnChange?.Invoke();
         }
 
         protected bool HasComponents(GameObject gameObject, params Type[] componentTypes)
@@ -58,6 +67,13 @@ namespace ECS
                 if (!gameObject.TryGetComponent(componentType, out var component))
                     return false;
             return true;
+        }
+
+        protected void ClearScene()
+        {
+            _entities.ForEach(e => DestroyEntity(e));
+            _entities.Clear();
+
         }
 
 

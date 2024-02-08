@@ -7,5 +7,6 @@ namespace ECS
 {
     public class Player : MonoBehaviour
     {
+        public int Lives = 3;
     }
 }

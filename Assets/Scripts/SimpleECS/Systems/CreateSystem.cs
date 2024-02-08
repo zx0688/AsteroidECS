@@ -5,20 +5,46 @@ using UnityEngine;
 
 namespace ECS
 {
-    public class CreateSystem : System
+    public class CreateSystem : CollisionSystem
     {
+        Player player;
+        LineRenderer lineRenderer;
 
         private float asteroidCreationTimestamp;
         private float shipCreationTimestamp;
 
-
-        public CreateSystem()
+        public CreateSystem(GameData gameData) : base(gameData)
         {
+            Reset();
+        }
+
+        protected override bool Filter(GameObject entity) => HasComponents(entity, typeof(Player));
+
+        protected override void OnEntitiesChanged()
+        {
+            base.OnEntitiesChanged();
+
+            if (entities.Count > 0)
+            {
+                player = entities[0].GetComponent<Player>();
+                lineRenderer = player.gameObject.GetComponent<LineRenderer>();
+            }
+        }
+
+        private void Reset()
+        {
+            ClearScene();
+
             AddEntity(Creator.Create("Ship"));
-            AddEntity(Creator.Create("UFO"));
 
             for (int i = 0; i < 5; i++)
-                AddEntity(Creator.Create("Asteroid"));
+                AddEntity(FixPosition(Creator.Create("Asteroid")));
+
+            AddEntity(FixPosition(Creator.Create("UFO")));
+
+            gameData.Restart = false;
+            gameData.Failed = false;
+            gameData.Score = 0;
 
             asteroidCreationTimestamp = Time.time + Random.Range(6, 9);
             shipCreationTimestamp = Time.time + Random.Range(6, 15);
@@ -26,17 +52,50 @@ namespace ECS
 
         override public void Update()
         {
-            if (Time.time > asteroidCreationTimestamp)
+            if (player == null)
+                return;
+
+            if (!gameData.Failed && Time.time > asteroidCreationTimestamp)
             {
-                AddEntity(Creator.Create("Asteroid"));
+                AddEntity(FixPosition(Creator.Create("Asteroid")));
                 asteroidCreationTimestamp = Time.time + Random.Range(6, 9);
             }
 
-            if (Time.time > shipCreationTimestamp)
+            if (!gameData.Failed && Time.time > shipCreationTimestamp)
             {
-                AddEntity(Creator.Create("UFO"));
+                AddEntity(FixPosition(Creator.Create("UFO")));
                 shipCreationTimestamp = Time.time + Random.Range(6, 15);
             }
+
+            if (gameData.Restart)
+            {
+                Reset();
+            }
+        }
+
+        private GameObject FixPosition(GameObject entity)
+        {
+            LineRenderer e = entity.GetComponent<LineRenderer>();
+
+            do
+            {
+                entity.GetComponent<Transform>().position = RandomPosition();
+            }
+            while (Hit(e, lineRenderer));
+
+            return entity;
+        }
+
+        private Vector3 RandomPosition()
+        {
+            float radius = 2 + Random.value * 4;
+            Vector3 center = player.GetComponent<Transform>().position;
+
+            float angle = UnityEngine.Random.value * Mathf.PI * 2;
+            Vector3 randomOffset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), center.z) * radius;
+            Vector3 randomPosition = center + randomOffset;
+
+            return randomPosition;
 
         }
 

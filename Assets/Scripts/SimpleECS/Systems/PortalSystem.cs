@@ -7,6 +7,10 @@ namespace ECS
 {
     public class PortalSystem : System
     {
+        public PortalSystem(GameData gameData) : base(gameData)
+        {
+        }
+
         protected override bool Filter(GameObject entity) => HasComponents(entity, typeof(Portal));
 
         override public void Update()
@@ -15,22 +19,17 @@ namespace ECS
             {
                 Transform p = entity.GetComponent<Transform>();
                 Vector3 viewportPoint = Camera.main.WorldToViewportPoint(p.position);
-                //if (HasComponents(entity, typeof(Portal)))
-                {
-                    if (viewportPoint.x < 0)
-                        viewportPoint.x = 1;
-                    else if (viewportPoint.x > 1)
-                        viewportPoint.x = 0;
-                    else if (viewportPoint.y < 0)
-                        viewportPoint.y = 1;
-                    else if (viewportPoint.y > 1)
-                        viewportPoint.y = 0;
+                if (viewportPoint.x < 0)
+                    viewportPoint.x = 1;
+                else if (viewportPoint.x > 1)
+                    viewportPoint.x = 0;
+                else if (viewportPoint.y < 0)
+                    viewportPoint.y = 1;
+                else if (viewportPoint.y > 1)
+                    viewportPoint.y = 0;
 
-                    p.position = Camera.main.ViewportToWorldPoint(viewportPoint);
-                }
-                //suicide
-                // else if (entity.TryGetComponent(out HP hP) && (viewportPoint.x < 0 || viewportPoint.x > 1 || viewportPoint.y < 0 || viewportPoint.y > 1))
-                //     hP.Value = 0;
+                p.position = Camera.main.ViewportToWorldPoint(viewportPoint);
+
 
             }
         }

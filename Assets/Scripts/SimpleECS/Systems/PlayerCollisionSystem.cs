@@ -8,8 +8,13 @@ namespace ECS
 {
     public class PlayerCollisionSystem : CollisionSystem
     {
-        GameObject player;
+        GameObject ship;
         LineRenderer renderer;
+        Player player;
+
+        public PlayerCollisionSystem(GameData gameData) : base(gameData)
+        {
+        }
 
         override protected bool Filter(GameObject entity) => HasComponents(entity, typeof(Target));
 
@@ -17,19 +22,19 @@ namespace ECS
         {
             base.OnEntitiesChanged();
 
-            player = GetEntities(typeof(Player))[0];
-
-            renderer = player != null ? player.GetComponent<LineRenderer>() : null;
+            ship = GetEntities(typeof(Player)).FirstOrDefault();
+            renderer = ship.GetComponent<LineRenderer>();
+            player = ship.GetComponent<Player>();
         }
 
         override public void Update()
         {
             foreach (var entity in entities)
             {
-                if (renderer != null && Hit(renderer, entity.GetComponent<LineRenderer>()))
+                if (!gameData.Failed && Hit(renderer, entity.GetComponent<LineRenderer>()))
                 {
-                    player.GetComponent<HP>().Value = 0;
-
+                    gameData.Failed = true;
+                    ship.SetActive(false);
                 }
             }
 

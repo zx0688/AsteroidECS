@@ -7,6 +7,10 @@ namespace ECS
 {
     public class PositionSystem : System
     {
+        public PositionSystem(GameData gameData) : base(gameData)
+        {
+        }
+
         override public void Update()
         {
 

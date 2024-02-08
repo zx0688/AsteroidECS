@@ -7,5 +7,6 @@ namespace ECS
 {
     public class Target : MonoBehaviour
     {
+        public int Score = 0;
     }
 }

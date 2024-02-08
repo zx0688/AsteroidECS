@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ECS;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,7 +13,12 @@ namespace ECS
         private DefPlayerActions playerActions;
         private InputAction move;
 
-        private GameObject player;
+        private GameObject ship;
+        private Player player;
+
+        public InputSystem(GameData gameData) : base(gameData)
+        {
+        }
 
         protected override void Init()
         {
@@ -26,25 +32,29 @@ namespace ECS
             move = playerActions.ship.Move;
 
             playerActions.ship.Fire.performed += OnFire;
+            playerActions.ship.Fire.performed += OnRestart;
+
             playerActions.ship.Laser.performed += OnLaserShoot;
         }
 
         override protected void OnEntitiesChanged()
         {
             base.OnEntitiesChanged();
-            player = GetEntities(typeof(PlayerInput))[0];
+
+            ship = GetEntities(typeof(PlayerInput)).FirstOrDefault();
+            player = ship.GetComponent<Player>();
         }
 
         private void OnLaserShoot(InputAction.CallbackContext contect)
         {
-            if (!player.TryGetComponent(out Ammo cd) || cd.Count == 0 || !cd.CooldownIsFinished(Time.time))
+            if (!ship.TryGetComponent(out Ammo cd) || cd.Count == 0 || !cd.CooldownIsFinished(Time.time) || gameData.Failed)
                 return;
 
             cd.Count -= 1;
             cd.StartCooldownTimestamp = Time.time;
             cd.StartReloadTimestamp = Time.time;
 
-            Transform tp = player.GetComponent<Transform>();
+            Transform tp = ship.GetComponent<Transform>();
             Vector3 playerDirection = tp.TransformDirection(Vector3.up);
             GameObject laser = Creator.Create("Laser");
             laser.GetComponent<Transform>().parent = tp;
@@ -55,9 +65,21 @@ namespace ECS
 
         }
 
+        private void OnRestart(InputAction.CallbackContext contect)
+        {
+            gameData.FirstStart = false;
+
+            if (!gameData.Failed)
+                return;
+            gameData.Restart = true;
+        }
+
         private void OnFire(InputAction.CallbackContext contect)
         {
-            Transform tp = player.GetComponent<Transform>();
+            if (gameData.Failed || gameData.FirstStart)
+                return;
+
+            Transform tp = ship.GetComponent<Transform>();
             Vector3 playerDirection = tp.TransformDirection(Vector3.up);
 
             GameObject bullet = Creator.Create("Bullet");
@@ -66,17 +88,19 @@ namespace ECS
             bullet.GetComponent<Velocity>().MaxValue = 3f;
             bullet.GetComponent<Transform>().rotation = tp.rotation;
             AddEntity(bullet);
-
         }
 
         override public void Update()
         {
+            if (gameData.Failed)
+                return;
+
             Vector2 moveValue = move.ReadValue<Vector2>();
-            player.GetComponent<Force>().Value = moveValue.y * 2;
+            ship.GetComponent<Force>().Value = moveValue.y * 2;
 
             if (moveValue.x != 0)
             {
-                Transform t = player.GetComponent<Transform>();
+                Transform t = ship.GetComponent<Transform>();
                 var rot = t.rotation.eulerAngles;
                 rot.z -= moveValue.x;
                 t.rotation = Quaternion.Euler(rot);

@@ -7,6 +7,10 @@ namespace ECS
 {
     public class AmmoSystem : System
     {
+        public AmmoSystem(GameData gameData) : base(gameData)
+        {
+        }
+
         protected override bool Filter(GameObject entity) => HasComponents(entity, typeof(Ammo));
 
         override public void Update()

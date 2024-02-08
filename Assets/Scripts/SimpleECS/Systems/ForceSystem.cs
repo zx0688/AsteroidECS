@@ -7,8 +7,16 @@ namespace ECS
 {
     public class ForceSystem : System
     {
+        public ForceSystem(GameData gameData) : base(gameData)
+        {
+        }
 
         protected override bool Filter(GameObject entity) => HasComponents(entity, typeof(Velocity), typeof(Force));
+
+        protected override void OnEntitiesChanged()
+        {
+            base.OnEntitiesChanged();
+        }
 
         override public void Update()
         {
