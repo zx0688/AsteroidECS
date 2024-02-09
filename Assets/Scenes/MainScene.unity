@@ -333,7 +333,6 @@ GameObject:
   m_Component:
   - component: {fileID: 909753104}
   - component: {fileID: 909753105}
-  - component: {fileID: 909753106}
   m_Layer: 0
   m_Name: Engine
   m_TagString: Untagged
@@ -369,18 +368,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ui: {fileID: 917451913}
---- !u!114 &909753106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 909753102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f60ff68802e14ed5ad7d3c3c8053a4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &917451908
 GameObject:
   m_ObjectHideFlags: 0
