@@ -76,12 +76,13 @@ namespace ECS
         private GameObject FixPosition(GameObject entity)
         {
             LineRenderer e = entity.GetComponent<LineRenderer>();
-
+            int iter = 0;
             do
             {
                 entity.GetComponent<Transform>().position = RandomPosition();
+                iter++;
             }
-            while (Hit(e, lineRenderer));
+            while (Hit(e, lineRenderer) && iter < 200);
 
             return entity;
         }

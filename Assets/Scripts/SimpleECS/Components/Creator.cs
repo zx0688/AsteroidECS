@@ -62,6 +62,7 @@ public class Creator : MonoBehaviour
         var initialSpeed = UnityEngine.Random.insideUnitSphere * 1;
         initialSpeed.z = 0;
 
+        asteroid.GetComponent<Asteroid>().baseAsteroid = true;
         asteroid.GetComponent<Transform>().localScale = RandomSize();
         asteroid.GetComponent<Velocity>().Value = initialSpeed;
         asteroid.GetComponent<HP>().Value = 2;
